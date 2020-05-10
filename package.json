@@ -17,6 +17,8 @@
         "@babel/preset-react": "^7.0.0",
         "axios": "^0.19",
         "bootstrap": "^4.0.0",
+        "browser-sync": "^2.26.7",
+        "browser-sync-webpack-plugin": "^2.0.1",
         "cross-env": "^7.0",
         "jquery": "^3.2",
         "laravel-mix": "^5.0.1",
@@ -24,8 +26,14 @@
         "popper.js": "^1.12",
         "react": "^16.2.0",
         "react-dom": "^16.2.0",
+        "react-loading-screen": "0.0.17",
+        "react-router-dom": "^5.1.2",
         "resolve-url-loader": "^3.1.0",
         "sass": "^1.15.2",
         "sass-loader": "^8.0.0"
+    },
+    "dependencies": {
+        "moment": "^2.25.3",
+        "styled-components": "^5.1.0"
     }
 }

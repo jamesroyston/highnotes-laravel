@@ -4,7 +4,7 @@ import DeletedNoteCard from './NoteCards/DeletedNoteCard'
 import NewNoteForm from './NewNoteForm/NewNoteForm'
 import LoadingScreen from 'react-loading-screen';
 import axios from 'axios'
-import './NoteSection.css'
+import './Notes.css'
 
 const NoteSection = () => {
 

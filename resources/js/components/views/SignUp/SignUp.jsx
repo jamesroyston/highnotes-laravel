@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react'
 import { withRouter, Redirect, Link } from 'react-router-dom'
-import { AuthContext } from '../../../contexts/AuthContext'
+import { AuthContext } from '../../contexts/AuthContext'
 
-const Login = (props) => {
-  const { login, isAuth } = useContext(AuthContext)
+const SignUp = (props) => {
+  const { signup, isAuth } = useContext(AuthContext)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -17,7 +17,7 @@ const Login = (props) => {
 
   const handleSubmit = async e => {
     e.preventDefault()
-    await login(username, password)
+    await signup(username, password)
     if (isAuth) {
       await props.history.push('/profile')
     }
@@ -28,7 +28,7 @@ const Login = (props) => {
       {isAuth ? <Redirect to="/profile" /> :
         (<div>
           <div className="container">
-            <h1>Please log in: </h1>
+            <h1>Not a user? Sign up below: </h1>
             <form onSubmit={e => handleSubmit(e)}>
               <div className="form-group">
                 <label htmlFor="username">Username</label>
@@ -43,7 +43,7 @@ const Login = (props) => {
               </div>
               <button className="btn btn-primary" type="submit">Submit</button>
             </form>
-            <p>Don't have account? &nbsp;<Link to="/signup">Sign up</Link></p>
+            <p>Already a user? &nbsp;<Link to="/login">Login</Link></p>
           </div>
         </div>)
       }
@@ -51,4 +51,4 @@ const Login = (props) => {
   )
 }
 
-export default withRouter(Login)
+export default withRouter(SignUp)

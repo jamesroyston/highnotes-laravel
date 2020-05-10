@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
-import HeaderNav from './components/HeaderNav/HeaderNav'
-import NoteSection from './components/NoteSection/NoteSection'
-import Login from './components/HeaderNav/Login/Login'
-import SignUp from './components/HeaderNav/SignUp/SignUp'
-import Logout from './components/HeaderNav/Logout/Logout'
-import ProtectedRoute from './components/ProtectedRoute'
+import Navbar from './Navbar'
+import NoteSection from './views/Notes/Notes'
+import Login from './views/Login/Login'
+import SignUp from './views/SignUp/SignUp'
+import Logout from './views/Logout/Logout'
+import ProtectedRoute from './ProtectedRoute'
 import { AuthProvider } from './contexts/AuthContext'
 import {
   BrowserRouter as Router,
@@ -14,6 +14,14 @@ import {
   Redirect
 } from 'react-router-dom'
 
+function NoMatch() {
+    return (
+        <div style={{
+            fontSize: '3rem',
+        }}>Sorry. Not found.</div>
+    )
+}
+
 function App() {
 
   return (
@@ -21,21 +29,18 @@ function App() {
       <AuthProvider>
 
         <div className="App">
-          <HeaderNav />
+          <Navbar />
           <Switch>
-            <Route path="/login">
-              <Login />
-            </Route>
-            <Route path="/signup">
-              <SignUp />
-            </Route>
-            <Route path="/logout">
-              <Logout />
-            </Route>
+            <Route path="/login" component={Login}/>
+            <Route path="/signup" component={SignUp}/>
+            <Route path="/logout" component={Logout}/>
             <Route exact path="/">
+                {/* create a landing page for this route */}
               <Redirect to="/login" />
             </Route>
             <ProtectedRoute path="/profile" component={NoteSection} />
+            {/* catch all */}
+            <Route component={NoMatch} />
           </Switch>
 
         </div>

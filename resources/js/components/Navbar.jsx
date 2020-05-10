@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { Link, withRouter } from 'react-router-dom'
-import { AuthContext } from '../../contexts/AuthContext'
+import { AuthContext } from './contexts/AuthContext'
 
 const HeaderNav = (props) => {
 

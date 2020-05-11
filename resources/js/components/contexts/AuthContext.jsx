@@ -1,69 +1,120 @@
-import React, { useState, createContext } from 'react'
-import axios from 'axios'
+import React, { useState, createContext } from "react";
+import axios from "axios";
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
-const AuthProvider = (props) => {
-  const [isAuth, setIsAuth] = useState(false)
-  const [sessionChecking, setSessionChecking] = useState(true)
+const AuthProvider = props => {
+    const lsState = localStorage['appState'] ? JSON.parse(localStorage['appState']) : '';
+    const hasToken = lsState !== '';
+    const [isAuth, setIsAuth] = useState(hasToken)
+    const [user, setUser] = useState('')
+    const [token, setToken] = useState("");
+    const [sessionChecking, setSessionChecking] = useState(true);
 
-  const signup = (user, pass) => {
-    axios.post('api/signup', { username: user, password: pass })
-      .then(res => {
-        if (res.status === 200) {
-          console.log('registration success!')
-        }
-      })
-      .then(() => login(user, pass))
-      .catch(err => err)
-  }
+    const signup = (name, email, pass, confirm) => {
+        axios
+            .post("api/auth/signup", {
+                name,
+                email,
+                password: pass,
+                password_confirmation: confirm
+            })
+            .then(res => {
+                if (res.status === 200 || res.status === 201) {
+                    return console.log("registration success!");
+                }
+            })
+            .then(() => login(email, pass))
+            .catch(err => err);
+    };
 
-  const login = (user, pass) => {
-    axios.post('api/login', { username: user, password: pass })
-      .then(res => {
-        if (res.status === 200 || res.data.isAuthenticated === true) {
-          return setIsAuth(true)
-        }
-      })
-      .catch(err => console.log(err))
-  }
+    const login = (email, password) => {
+        axios
+            .post("api/auth/login", { email, password, remember_me: true })
+            .then(res => {
+                if (res.status === 200 || res.data.access_token.length > 0) {
+                    const appState = {
+                        email: email,
+                        access_token: res.data.access_token
+                    };
+                    localStorage["appState"] = JSON.stringify(appState);
+                    setToken(appState.access_token);
+                    return setIsAuth(true);
+                }
+            })
+            .catch(err => console.log(err));
+    };
 
-  const logout = () => {
-    // debugger
-    axios.get('api/logout')
-      .then(res => {
-        if (res.status === 200 || res.status === 304) {
-          setIsAuth(false)
-          console.log('logged out....')
-        }
-      })
-      .catch(err => console.log(err))
-  }
+    const logout = () => {
+        axios("api/auth/logout", {
+            method: "get",
+            headers: {
+                Authorization: `Bearer ${localStorage['appState'] ? JSON.parse(localStorage['appState']).access_token : ''}`
+            }
+        })
+            .then(res => {
+                if (res.status === 200 || res.status === 304) {
+                    setIsAuth(false);
+                    setToken('');
+                    localStorage['appState'] = '';
+                    console.log("logged out....");
+                }
+            })
+            .catch(err => console.log(err));
+    };
 
-  const sessionCheck = () => {
-    return axios.get('api/sessioncheck')
-      .then(res => {
-        if (res.status === 200 || res.data.isAuthenticated === true || res.data.username) {
-          setIsAuth(true)
-          setSessionChecking(false)
-        }
-        if (res.status === 404) {
-          setIsAuth(false)
-          setSessionChecking(false)
-        }
-      })
-      .catch(err => console.log(err))
-  }
+    const sessionCheck = () => {
+        const token = localStorage["appState"]
+            ? JSON.parse(localStorage["appState"])
+            : "";
+        console.log('sessioncheck');
+        //  /api/auth/user call on backend
+        if (token === "") {
+            setIsAuth(false);
+            setSessionChecking(false);
+            return;
+        } else {
 
-  return (
-    <AuthContext.Provider
-      value={{
-        isAuth, setIsAuth, login, logout, sessionCheck, sessionChecking, signup
-      }}
-    >
-      {props.children}
-    </AuthContext.Provider>
-  )
-}
+            return axios("api/auth/user", {
+                method: "get",
+                headers: {
+                    Authorization: `Bearer ${token.access_token}`
+                }
+            })
+            .then(res => {
+                if (res.status === 200) {
+                    const user = {
+                        name: res.data.name,
+                        email: res.data.email
+                    }
+                    setUser(user)
+                    setIsAuth(true);
+                    setSessionChecking(false);
+                }
+                if (res.status !== 200) {
+                    setIsAuth(false);
+                    // setSessionChecking(false);
+                }
+            })
+            .catch(err => console.log(err));
+        };
+    }
 
-export { AuthProvider, AuthContext }
+    return (
+        <AuthContext.Provider
+            value={{
+                isAuth,
+                setIsAuth,
+                login,
+                logout,
+                sessionCheck,
+                sessionChecking,
+                signup
+            }}
+        >
+            {props.children}
+        </AuthContext.Provider>
+    );
+};
+
+export { AuthProvider, AuthContext };

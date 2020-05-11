@@ -101684,12 +101684,14 @@ __webpack_require__.r(__webpack_exports__);
 function NoMatch() {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     style: {
-      fontSize: '3rem'
+      fontSize: "3rem"
     }
   }, "Sorry. Not found.");
 }
 
 function App() {
+  var state = localStorage["appState"];
+  var isAuth = state ? JSON.parse(state).access_token : "";
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_9__["BrowserRouter"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_contexts_AuthContext__WEBPACK_IMPORTED_MODULE_8__["AuthProvider"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "App"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Navbar__WEBPACK_IMPORTED_MODULE_2__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_9__["Switch"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_9__["Route"], {
@@ -101716,8 +101718,8 @@ function App() {
 
 /* harmony default export */ __webpack_exports__["default"] = (App);
 
-if (document.getElementById('app')) {
-  react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(App, null), document.getElementById('app'));
+if (document.getElementById("app")) {
+  react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(App, null), document.getElementById("app"));
 }
 
 /***/ }),
@@ -101889,26 +101891,28 @@ var ProtectedRoute = function ProtectedRoute(_ref) {
       sessionCheck = _useContext.sessionCheck,
       sessionChecking = _useContext.sessionChecking;
 
-  sessionCheck();
+  console.log("hi");
+  console.log(isAuth);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Route"], _extends({
     render: function render(props) {
-      if (sessionChecking) {
-        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_loading_screen__WEBPACK_IMPORTED_MODULE_3___default.a, {
-          loading: sessionChecking,
-          bgColor: "#f1f1f1",
-          spinnerColor: "#9ee5f8",
-          textColor: "#676767",
-          text: "Grabbing your notes. Hang tight."
-        });
+      //     return (
+      //         <LoadingScreen
+      //             loading={sessionChecking}
+      //             bgColor="#f1f1f1"
+      //             spinnerColor="#9ee5f8"
+      //             textColor="#676767"
+      //             text="Grabbing your notes. Hang tight."
+      //         />
+      //     );
+      // } else {
+      if (isAuth) {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Component, props);
       } else {
-        if (isAuth) {
-          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Component, props);
-        } else {
-          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Redirect"], {
-            to: "/login"
-          });
-        }
-      }
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Redirect"], {
+          to: "/login"
+        });
+      } // }
+
     }
   }, rest)));
 };
@@ -101949,37 +101953,59 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var AuthContext = Object(react__WEBPACK_IMPORTED_MODULE_0__["createContext"])();
 
 var AuthProvider = function AuthProvider(props) {
-  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false),
+  var lsState = localStorage['appState'] ? JSON.parse(localStorage['appState']) : '';
+  var hasToken = lsState !== '';
+
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(hasToken),
       _useState2 = _slicedToArray(_useState, 2),
       isAuth = _useState2[0],
       setIsAuth = _useState2[1];
 
-  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(true),
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
       _useState4 = _slicedToArray(_useState3, 2),
-      sessionChecking = _useState4[0],
-      setSessionChecking = _useState4[1];
+      user = _useState4[0],
+      setUser = _useState4[1];
 
-  var signup = function signup(user, pass) {
-    axios__WEBPACK_IMPORTED_MODULE_1___default.a.post('api/signup', {
-      username: user,
-      password: pass
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
+      _useState6 = _slicedToArray(_useState5, 2),
+      token = _useState6[0],
+      setToken = _useState6[1];
+
+  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(true),
+      _useState8 = _slicedToArray(_useState7, 2),
+      sessionChecking = _useState8[0],
+      setSessionChecking = _useState8[1];
+
+  var signup = function signup(name, email, pass, confirm) {
+    axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("api/auth/signup", {
+      name: name,
+      email: email,
+      password: pass,
+      password_confirmation: confirm
     }).then(function (res) {
-      if (res.status === 200) {
-        console.log('registration success!');
+      if (res.status === 200 || res.status === 201) {
+        return console.log("registration success!");
       }
     }).then(function () {
-      return login(user, pass);
+      return login(email, pass);
     })["catch"](function (err) {
       return err;
     });
   };
 
-  var login = function login(user, pass) {
-    axios__WEBPACK_IMPORTED_MODULE_1___default.a.post('api/login', {
-      username: user,
-      password: pass
+  var login = function login(email, password) {
+    axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("api/auth/login", {
+      email: email,
+      password: password,
+      remember_me: true
     }).then(function (res) {
-      if (res.status === 200 || res.data.isAuthenticated === true) {
+      if (res.status === 200 || res.data.access_token.length > 0) {
+        var appState = {
+          email: email,
+          access_token: res.data.access_token
+        };
+        localStorage["appState"] = JSON.stringify(appState);
+        setToken(appState.access_token);
         return setIsAuth(true);
       }
     })["catch"](function (err) {
@@ -101988,11 +102014,17 @@ var AuthProvider = function AuthProvider(props) {
   };
 
   var logout = function logout() {
-    // debugger
-    axios__WEBPACK_IMPORTED_MODULE_1___default.a.get('api/logout').then(function (res) {
+    axios__WEBPACK_IMPORTED_MODULE_1___default()("api/auth/logout", {
+      method: "get",
+      headers: {
+        Authorization: "Bearer ".concat(localStorage['appState'] ? JSON.parse(localStorage['appState']).access_token : '')
+      }
+    }).then(function (res) {
       if (res.status === 200 || res.status === 304) {
         setIsAuth(false);
-        console.log('logged out....');
+        setToken('');
+        localStorage['appState'] = '';
+        console.log("logged out....");
       }
     })["catch"](function (err) {
       return console.log(err);
@@ -102000,19 +102032,39 @@ var AuthProvider = function AuthProvider(props) {
   };
 
   var sessionCheck = function sessionCheck() {
-    return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get('api/sessioncheck').then(function (res) {
-      if (res.status === 200 || res.data.isAuthenticated === true || res.data.username) {
-        setIsAuth(true);
-        setSessionChecking(false);
-      }
+    var token = localStorage["appState"] ? JSON.parse(localStorage["appState"]) : "";
+    console.log('sessioncheck'); //  /api/auth/user call on backend
 
-      if (res.status === 404) {
-        setIsAuth(false);
-        setSessionChecking(false);
-      }
-    })["catch"](function (err) {
-      return console.log(err);
-    });
+    if (token === "") {
+      setIsAuth(false);
+      setSessionChecking(false);
+      return;
+    } else {
+      return axios__WEBPACK_IMPORTED_MODULE_1___default()("api/auth/user", {
+        method: "get",
+        headers: {
+          Authorization: "Bearer ".concat(token.access_token)
+        }
+      }).then(function (res) {
+        if (res.status === 200) {
+          var _user = {
+            name: res.data.name,
+            email: res.data.email
+          };
+          setUser(_user);
+          setIsAuth(true);
+          setSessionChecking(false);
+        }
+
+        if (res.status !== 200) {
+          setIsAuth(false); // setSessionChecking(false);
+        }
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    }
+
+    ;
   };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AuthContext.Provider, {
@@ -102135,13 +102187,13 @@ var Login = function Login(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("label", {
-    htmlFor: "username"
-  }, "Username"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+    htmlFor: "email"
+  }, "Email"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
     className: "form-control",
-    id: "username",
-    type: "text",
+    id: "email",
+    type: "email",
     placeholder: "Enter username",
-    name: "username",
+    name: "email",
     value: username,
     onChange: updateUser,
     required: true
@@ -102416,15 +102468,16 @@ if(false) {}
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _NoteCards_NoteCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NoteCards/NoteCard */ "./resources/js/components/views/Notes/NoteCards/NoteCard.jsx");
-/* harmony import */ var _NoteCards_DeletedNoteCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./NoteCards/DeletedNoteCard */ "./resources/js/components/views/Notes/NoteCards/DeletedNoteCard.jsx");
-/* harmony import */ var _NewNoteForm_NewNoteForm__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NewNoteForm/NewNoteForm */ "./resources/js/components/views/Notes/NewNoteForm/NewNoteForm.jsx");
-/* harmony import */ var react_loading_screen__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-loading-screen */ "./node_modules/react-loading-screen/dist/index.js");
-/* harmony import */ var react_loading_screen__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_loading_screen__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _Notes_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Notes.css */ "./resources/js/components/views/Notes/Notes.css");
-/* harmony import */ var _Notes_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_Notes_css__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _contexts_AuthContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../contexts/AuthContext */ "./resources/js/components/contexts/AuthContext.jsx");
+/* harmony import */ var _NoteCards_NoteCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./NoteCards/NoteCard */ "./resources/js/components/views/Notes/NoteCards/NoteCard.jsx");
+/* harmony import */ var _NoteCards_DeletedNoteCard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NoteCards/DeletedNoteCard */ "./resources/js/components/views/Notes/NoteCards/DeletedNoteCard.jsx");
+/* harmony import */ var _NewNoteForm_NewNoteForm__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./NewNoteForm/NewNoteForm */ "./resources/js/components/views/Notes/NewNoteForm/NewNoteForm.jsx");
+/* harmony import */ var react_loading_screen__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-loading-screen */ "./node_modules/react-loading-screen/dist/index.js");
+/* harmony import */ var react_loading_screen__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(react_loading_screen__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _Notes_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Notes.css */ "./resources/js/components/views/Notes/Notes.css");
+/* harmony import */ var _Notes_css__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_Notes_css__WEBPACK_IMPORTED_MODULE_7__);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -102453,13 +102506,17 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-var NoteSection = function NoteSection() {
+
+var Notes = function Notes() {
+  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_0__["useContext"])(_contexts_AuthContext__WEBPACK_IMPORTED_MODULE_1__["AuthContext"]),
+      user = _useContext.user;
+
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]),
       _useState2 = _slicedToArray(_useState, 2),
       notes = _useState2[0],
       setNotes = _useState2[1];
 
-  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(true),
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false),
       _useState4 = _slicedToArray(_useState3, 2),
       loading = _useState4[0],
       setLoading = _useState4[1];
@@ -102479,17 +102536,17 @@ var NoteSection = function NoteSection() {
       showNoteForm = _useState10[0],
       setShowNoteForm = _useState10[1];
 
-  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState12 = _slicedToArray(_useState11, 2),
       recipient = _useState12[0],
       setRecipient = _useState12[1];
 
-  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
+  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState14 = _slicedToArray(_useState13, 2),
       recipientUserName = _useState14[0],
       setRecipientUserName = _useState14[1];
 
-  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState16 = _slicedToArray(_useState15, 2),
       showShareFormId = _useState16[0],
       setShowShareFormId = _useState16[1];
@@ -102499,55 +102556,61 @@ var NoteSection = function NoteSection() {
       userList = _useState18[0],
       setUserList = _useState18[1];
 
-  var _useState19 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
+  var _useState19 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState20 = _slicedToArray(_useState19, 2),
-      user = _useState20[0],
-      setUser = _useState20[1];
+      name = _useState20[0],
+      setName = _useState20[1];
 
-  var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
+  var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState22 = _slicedToArray(_useState21, 2),
       title = _useState22[0],
       setTitle = _useState22[1];
 
-  var _useState23 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
+  var _useState23 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState24 = _slicedToArray(_useState23, 2),
       description = _useState24[0],
       setDescription = _useState24[1];
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
-    axios__WEBPACK_IMPORTED_MODULE_5___default.a.get('api/profile').then(function (res) {
-      var tempNotes = _toConsumableArray(res.data.notes.notes.map(function (note) {
-        note.shareTarget = false;
-        return note;
-      }));
-
-      var tempDelNotes = _toConsumableArray(res.data.deleted.notes.map(function (note) {
-        note.shareTarget = false;
-        return note;
-      }));
-
-      setNotes(tempNotes);
-      setDeletedNotes(tempDelNotes);
-      setUser(res.data.username);
-      setLoading(false);
-    })["catch"](function (err) {
-      return console.log(err);
+    axios__WEBPACK_IMPORTED_MODULE_6___default()('api/auth/user', {
+      method: 'get',
+      headers: {
+        'Authorization': "Bearer ".concat(localStorage['appState'] ? JSON.parse(localStorage['appState']).access_token : '')
+      }
+    }).then(function (res) {
+      return setName(res.data.name.charAt(0).toUpperCase() + res.data.name.slice(1));
     });
-  }, []);
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
-    var scopedUser = user;
-    axios__WEBPACK_IMPORTED_MODULE_5___default.a.get('api/showallusers').then(function (res) {
-      var scopedUserList = _toConsumableArray(res.data.users.filter(function (user) {
-        return user.username !== scopedUser;
-      }));
-
-      setRecipient(scopedUserList[0].userId);
-      setRecipientUserName(scopedUserList[0].username);
-      return setUserList(scopedUserList);
-    })["catch"](function (err) {
-      return err;
-    });
-  }, [user]);
+  }, []); //   useEffect(() => {
+  //     axios.get('api/profile')
+  //       .then(res => {
+  //         const tempNotes = [...res.data.notes.notes.map(note => {
+  //           note.shareTarget = false
+  //           return note
+  //         })]
+  //         const tempDelNotes = [...res.data.deleted.notes.map(note => {
+  //           note.shareTarget = false
+  //           return note
+  //         })]
+  //         setNotes(tempNotes)
+  //         setDeletedNotes(tempDelNotes)
+  //         setUser(res.data.username)
+  //         setLoading(false)
+  //       })
+  //       .catch(err => console.log(err))
+  //   }, [])
+  //   useEffect(() => {
+  //     let scopedUser = user
+  //     axios.get('api/showallusers')
+  //       .then(res => {
+  //         let scopedUserList = [...res.data.users.filter(user => {
+  //           return user.username !== scopedUser
+  //         })]
+  //         setRecipient(scopedUserList[0].userId)
+  //         setRecipientUserName(scopedUserList[0].username)
+  //         return setUserList(scopedUserList)
+  //       })
+  //       .catch(err => err)
+  //   }, [user])
 
   var updateTitle = function updateTitle(e) {
     return setTitle(e.target.value);
@@ -102559,16 +102622,16 @@ var NoteSection = function NoteSection() {
 
   var updateRecipient = function updateRecipient(e) {
     setRecipient(e.target.value);
-    var selectText = document.querySelector('select#userSelect');
+    var selectText = document.querySelector("select#userSelect");
     var username = selectText.options[selectText.selectedIndex].text;
     setRecipientUserName(username);
   };
 
   var toggleShareForm = function toggleShareForm(e) {
-    var id = e.target.closest('div[data-note-id]').dataset.noteId;
+    var id = e.target.closest("div[data-note-id]").dataset.noteId;
 
     if (id === showShareFormId) {
-      return setShowShareFormId('');
+      return setShowShareFormId("");
     } else {
       var tempNotes = _toConsumableArray(notes.filter(function (note) {
         return note._id === id;
@@ -102584,8 +102647,8 @@ var NoteSection = function NoteSection() {
   };
 
   var resetForm = function resetForm() {
-    setTitle('');
-    setDescription('');
+    setTitle("");
+    setDescription("");
   };
 
   var toggleDeletedElt = function toggleDeletedElt() {
@@ -102598,7 +102661,7 @@ var NoteSection = function NoteSection() {
 
   var handleSubmit = function handleSubmit(e) {
     e.preventDefault();
-    axios__WEBPACK_IMPORTED_MODULE_5___default.a.post('api/newnote', {
+    axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/newnote", {
       title: title,
       description: description
     }).then(function (res) {
@@ -102611,8 +102674,8 @@ var NoteSection = function NoteSection() {
   };
 
   var deleteNote = function deleteNote(e) {
-    var id = e.target.closest('div[data-note-id]').dataset.noteId;
-    axios__WEBPACK_IMPORTED_MODULE_5___default.a.patch('api/delete', {
+    var id = e.target.closest("div[data-note-id]").dataset.noteId;
+    axios__WEBPACK_IMPORTED_MODULE_6___default.a.patch("api/delete", {
       noteId: id
     }).then(function (res) {
       setNotes(_toConsumableArray(res.data.notes.notes));
@@ -102624,8 +102687,8 @@ var NoteSection = function NoteSection() {
   };
 
   var restoreNote = function restoreNote(e) {
-    var id = e.target.closest('div[data-note-id]').dataset.noteId;
-    axios__WEBPACK_IMPORTED_MODULE_5___default.a.patch('api/restore', {
+    var id = e.target.closest("div[data-note-id]").dataset.noteId;
+    axios__WEBPACK_IMPORTED_MODULE_6___default.a.patch("api/restore", {
       noteId: id
     }).then(function (res) {
       setNotes(_toConsumableArray(res.data.notes.notes));
@@ -102638,8 +102701,8 @@ var NoteSection = function NoteSection() {
 
   var shareNote = function shareNote(e) {
     e.preventDefault();
-    var id = e.target.closest('div[data-note-id]').dataset.noteId;
-    axios__WEBPACK_IMPORTED_MODULE_5___default.a.post('api/share', {
+    var id = e.target.closest("div[data-note-id]").dataset.noteId;
+    axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/share", {
       userId: recipient,
       noteId: id
     }).then(function () {
@@ -102652,7 +102715,7 @@ var NoteSection = function NoteSection() {
 
 
   var deletedNotesElt = deletedNotes.map(function (note) {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NoteCards_DeletedNoteCard__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NoteCards_DeletedNoteCard__WEBPACK_IMPORTED_MODULE_3__["default"], {
       key: note._id,
       dataNoteId: note._id,
       title: note.title,
@@ -102663,7 +102726,7 @@ var NoteSection = function NoteSection() {
     });
   });
   var notesElt = notes.map(function (note) {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NoteCards_NoteCard__WEBPACK_IMPORTED_MODULE_1__["default"], {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NoteCards_NoteCard__WEBPACK_IMPORTED_MODULE_2__["default"], {
       updatedAt: note.updatedAt,
       createdAt: note.createdAt,
       key: note._id,
@@ -102681,35 +102744,35 @@ var NoteSection = function NoteSection() {
   });
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "container"
-  }, loading ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_loading_screen__WEBPACK_IMPORTED_MODULE_4___default.a, {
+  }, loading ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_loading_screen__WEBPACK_IMPORTED_MODULE_5___default.a, {
     loading: loading,
     bgColor: "#f1f1f1",
     spinnerColor: "#9ee5f8",
     textColor: "#676767",
     text: "Grabbing your notes. Hang tight."
-  }) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Hello, ", user, "."), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+  }) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Hello, ", name, "."), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     type: "button",
     style: {
-      outline: 'none'
+      outline: "none"
     },
     onClick: toggleDeletedElt,
     className: !showDeleted ? "btn btn-outline-info" : "btn btn-danger"
-  }, showDeleted ? 'Back to notes' : 'See deleted notes'), showDeleted ? '' : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+  }, showDeleted ? "Back to notes" : "See deleted notes"), showDeleted ? "" : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     className: !showNoteForm ? "btn btn-outline-success" : "btn btn-danger",
     type: "button",
     onClick: toggleNoteForm
   }, showNoteForm ? "Cancel" : "New note"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "card-columns"
-  }, showNoteForm ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NewNoteForm_NewNoteForm__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, showNoteForm ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NewNoteForm_NewNoteForm__WEBPACK_IMPORTED_MODULE_4__["default"], {
     handleSubmit: handleSubmit,
     title: title,
     updateTitle: updateTitle,
     description: description,
     updateDescription: updateDescription
-  }) : '', showDeleted ? deletedNotesElt : notesElt)));
+  }) : "", showDeleted ? deletedNotesElt : notesElt)));
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (NoteSection);
+/* harmony default export */ __webpack_exports__["default"] = (Notes);
 
 /***/ }),
 
@@ -102734,6 +102797,12 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -102755,44 +102824,62 @@ var SignUp = function SignUp(props) {
       signup = _useContext.signup,
       isAuth = _useContext.isAuth;
 
-  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(''),
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
+  }),
       _useState2 = _slicedToArray(_useState, 2),
-      username = _useState2[0],
-      setUsername = _useState2[1];
+      payload = _useState2[0],
+      setPayload = _useState2[1];
 
-  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(''),
-      _useState4 = _slicedToArray(_useState3, 2),
-      password = _useState4[0],
-      setPassword = _useState4[1];
+  var updateName = function updateName(e) {
+    setPayload(_objectSpread(_objectSpread({}, payload), {}, {
+      name: e.target.value
+    }));
+  };
 
-  var updateUser = function updateUser(e) {
-    setUsername(e.target.value);
+  var updateEmail = function updateEmail(e) {
+    setPayload(_objectSpread(_objectSpread({}, payload), {}, {
+      email: e.target.value
+    }));
   };
 
   var updatePass = function updatePass(e) {
-    setPassword(e.target.value);
+    setPayload(_objectSpread(_objectSpread({}, payload), {}, {
+      password: e.target.value
+    }));
+  };
+
+  var updateConfirm = function updateConfirm(e) {
+    setPayload(_objectSpread(_objectSpread({}, payload), {}, {
+      password_confirmation: e.target.value
+    }));
   };
 
   var handleSubmit = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
+      var name, email, password, password_confirmation;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
               e.preventDefault();
-              _context.next = 3;
-              return signup(username, password);
+              name = payload.name, email = payload.email, password = payload.password, password_confirmation = payload.password_confirmation;
+              _context.next = 4;
+              return signup(name, email, password, password_confirmation);
 
-            case 3:
+            case 4:
               if (!isAuth) {
-                _context.next = 6;
+                _context.next = 7;
                 break;
               }
 
-              _context.next = 6;
+              _context.next = 7;
               return props.history.push('/profile');
 
-            case 6:
+            case 7:
             case "end":
               return _context.stop();
           }
@@ -102817,14 +102904,27 @@ var SignUp = function SignUp(props) {
     className: "form-group"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("label", {
     htmlFor: "username"
-  }, "Username"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+  }, "Name"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
     className: "form-control",
     id: "username",
     type: "text",
-    placeholder: "Enter username",
+    placeholder: "Enter name",
     name: "username",
-    value: username,
-    onChange: updateUser,
+    value: payload.name,
+    onChange: updateName,
+    required: true
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("label", {
+    htmlFor: "email"
+  }, "Email"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+    className: "form-control",
+    id: "email",
+    type: "email",
+    placeholder: "Enter email",
+    name: "username",
+    value: payload.email,
+    onChange: updateEmail,
     required: true
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     className: "form-group"
@@ -102836,8 +102936,21 @@ var SignUp = function SignUp(props) {
     type: "password",
     name: "password",
     id: "password",
-    value: password,
+    value: payload.password,
     onChange: updatePass,
+    required: true
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("label", {
+    htmlFor: "passwordConfirm"
+  }, "Confirm Password:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+    className: "form-control",
+    placeholder: "Confirm password",
+    type: "password",
+    name: "password",
+    id: "passwordConfirm",
+    value: payload.password_confirmation,
+    onChange: updateConfirm,
     required: true
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
     className: "btn btn-primary",

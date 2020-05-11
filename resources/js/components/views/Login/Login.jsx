@@ -31,8 +31,8 @@ const Login = (props) => {
             <h1>Please log in: </h1>
             <form onSubmit={e => handleSubmit(e)}>
               <div className="form-group">
-                <label htmlFor="username">Username</label>
-                <input className="form-control" id="username" type="text" placeholder="Enter username" name="username" value={username} onChange={updateUser} required />
+                <label htmlFor="email">Email</label>
+                <input className="form-control" id="email" type="email" placeholder="Enter username" name="email" value={username} onChange={updateUser} required />
 
               </div>
 

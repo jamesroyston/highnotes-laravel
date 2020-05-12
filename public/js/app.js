@@ -101953,15 +101953,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var AuthContext = Object(react__WEBPACK_IMPORTED_MODULE_0__["createContext"])();
 
 var AuthProvider = function AuthProvider(props) {
-  var lsState = localStorage['appState'] ? JSON.parse(localStorage['appState']) : '';
-  var hasToken = lsState !== '';
+  var lsState = localStorage["appState"] ? JSON.parse(localStorage["appState"]) : "";
+  var hasToken = lsState !== "";
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(hasToken),
       _useState2 = _slicedToArray(_useState, 2),
       isAuth = _useState2[0],
       setIsAuth = _useState2[1];
 
-  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState4 = _slicedToArray(_useState3, 2),
       user = _useState4[0],
       setUser = _useState4[1];
@@ -102017,13 +102017,13 @@ var AuthProvider = function AuthProvider(props) {
     axios__WEBPACK_IMPORTED_MODULE_1___default()("api/auth/logout", {
       method: "get",
       headers: {
-        Authorization: "Bearer ".concat(localStorage['appState'] ? JSON.parse(localStorage['appState']).access_token : '')
+        Authorization: "Bearer ".concat(localStorage["appState"] ? JSON.parse(localStorage["appState"]).access_token : "")
       }
     }).then(function (res) {
       if (res.status === 200 || res.status === 304) {
         setIsAuth(false);
-        setToken('');
-        localStorage['appState'] = '';
+        setToken("");
+        localStorage["appState"] = "";
         console.log("logged out....");
       }
     })["catch"](function (err) {
@@ -102033,7 +102033,7 @@ var AuthProvider = function AuthProvider(props) {
 
   var sessionCheck = function sessionCheck() {
     var token = localStorage["appState"] ? JSON.parse(localStorage["appState"]) : "";
-    console.log('sessioncheck'); //  /api/auth/user call on backend
+    console.log("sessioncheck"); //  /api/auth/user call on backend
 
     if (token === "") {
       setIsAuth(false);
@@ -102063,8 +102063,6 @@ var AuthProvider = function AuthProvider(props) {
         return console.log(err);
       });
     }
-
-    ;
   };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AuthContext.Provider, {

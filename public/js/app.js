@@ -102596,10 +102596,8 @@ var Notes = function Notes() {
         //   note.shareTarget = false
         //   return note
         // })]
-        var arr = Object.entries(res.data).map(function (innerArray) {
-          return innerArray[1];
-        });
-        setNotes(arr); // setDeletedNotes(tempDelNotes)
+        // let arr = Object.entries(res.data).map(innerArray => innerArray[1]);
+        setNotes(res.data); // setDeletedNotes(tempDelNotes)
 
         setUser(res.data.username);
         setLoading(false);
@@ -102690,15 +102688,13 @@ var Notes = function Notes() {
 
   var handleSubmit = function handleSubmit(e) {
     e.preventDefault();
-    axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes", {
+    axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes/new", {
       title: title,
       description: description,
       userId: userId
     }).then(function (res) {
-      var arr = Object.entries(res.data).map(function (innerArray) {
-        return innerArray[1];
-      });
-      setNotes(arr);
+      console.log(res);
+      setNotes(res.data);
       resetForm();
       return toggleNoteForm(!showNoteForm);
     })["catch"](function (err) {
@@ -102708,15 +102704,12 @@ var Notes = function Notes() {
 
   var deleteNote = function deleteNote(e) {
     var id = e.target.closest("div[data-note-id]").dataset.noteId;
-    axios__WEBPACK_IMPORTED_MODULE_6___default.a.patch("api/delete", {
-      noteId: id
-    }).then(function (res) {
-      setNotes(_toConsumableArray(res.data.notes.notes));
-      setDeletedNotes(_toConsumableArray(res.data.deleted.notes));
+    axios__WEBPACK_IMPORTED_MODULE_6___default.a["delete"]("api/notes/".concat(userId, "/").concat(id)).then(function (res) {
+      setNotes(res.data);
     })["catch"](function (err) {
       return err;
     });
-    alert("Deleted note! If this was a mistake, you can restore it in the deleted notes view.");
+    console.log("Deleted note! If this was a mistake, you can restore it in the deleted notes view.");
   };
 
   var restoreNote = function restoreNote(e) {
@@ -102757,9 +102750,6 @@ var Notes = function Notes() {
       updatedAt: note.updatedAt,
       createdAt: note.createdAt
     });
-  });
-  notes.map(function (note) {
-    return console.log(note);
   });
   var notesElt = notes.map(function (note) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NoteCards_NoteCard__WEBPACK_IMPORTED_MODULE_2__["default"], {

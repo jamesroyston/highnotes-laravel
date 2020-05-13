@@ -16,7 +16,7 @@ class NotesController extends Controller
      */
     public function getAllNotes(Request $request) {
 //        return Note::all()->where('user_id', '=', $request->get('userId'));
-        return User::find($request->get('userId'))->notes()->get();
+        return Response(User::find($request->get('userId'))->notes()->get(), 200);
     }
 
     /**
@@ -54,7 +54,8 @@ class NotesController extends Controller
             "user_id" => $request->get('userId'),
         ]);
         $note->save();
-        return Note::all()->where('user_id', '=', $id);
+        return Response(User::find($id)->notes()->get(),200);
+//        return 'hey';
     }
 
     /**
@@ -97,8 +98,10 @@ class NotesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($userId, $noteId)
     {
-        //
+        $noteId = Note::findOrFail($noteId);
+        $noteId->delete();
+        return Response(User::find($userId)->notes()->get(),200);
     }
 }

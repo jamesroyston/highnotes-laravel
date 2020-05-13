@@ -53,8 +53,8 @@ const Notes = () => {
             //   note.shareTarget = false
             //   return note
             // })]
-            let arr = Object.entries(res.data).map(innerArray => innerArray[1]);
-            setNotes(arr);
+            // let arr = Object.entries(res.data).map(innerArray => innerArray[1]);
+            setNotes(res.data);
             // setDeletedNotes(tempDelNotes)
             setUser(res.data.username);
             setLoading(false);
@@ -130,14 +130,14 @@ const Notes = () => {
   const handleSubmit = e => {
     e.preventDefault();
     axios
-      .post("api/notes", {
+      .post("api/notes/new", {
         title,
         description,
         userId
       })
       .then(res => {
-        let arr = Object.entries(res.data).map(innerArray => innerArray[1]);
-        setNotes(arr);
+        console.log(res);
+        setNotes(res.data);
         resetForm();
         return toggleNoteForm(!showNoteForm);
       })
@@ -146,15 +146,12 @@ const Notes = () => {
   const deleteNote = e => {
     const id = e.target.closest("div[data-note-id]").dataset.noteId;
     axios
-      .patch("api/delete", {
-        noteId: id
-      })
+      .delete(`api/notes/${userId}/${id}`)
       .then(res => {
-        setNotes([...res.data.notes.notes]);
-        setDeletedNotes([...res.data.deleted.notes]);
+        setNotes(res.data);
       })
       .catch(err => err);
-    alert(
+    console.log(
       `Deleted note! If this was a mistake, you can restore it in the deleted notes view.`
     );
   };
@@ -198,7 +195,6 @@ const Notes = () => {
       createdAt={note.createdAt}
     />
   ));
-  notes.map(note => console.log(note));
 
   const notesElt = notes.map(note => (
     <NoteCard

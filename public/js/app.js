@@ -102585,7 +102585,7 @@ var Notes = function Notes() {
       setUserId(res.data.id);
       return res.data.id;
     }).then(function (res) {
-      axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes/", {
+      axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes", {
         userId: res
       }).then(function (res) {
         // const tempNotes = res.data.map(note => {

@@ -41,7 +41,7 @@ const Notes = () => {
       })
       .then(res => {
         axios
-          .post(`api/notes/`, {
+          .post(`api/notes`, {
             userId: res
           })
           .then(res => {

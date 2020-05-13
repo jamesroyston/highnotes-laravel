@@ -15,7 +15,8 @@ class NotesController extends Controller
      * @return Note[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getAllNotes(Request $request) {
-        return Note::all()->where('user_id', '=', $request->get('userId'));
+//        return Note::all()->where('user_id', '=', $request->get('userId'));
+        return User::find($request->get('userId'))->notes()->get();
     }
 
     /**

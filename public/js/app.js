@@ -102561,41 +102561,72 @@ var Notes = function Notes() {
 
   var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState22 = _slicedToArray(_useState21, 2),
-      title = _useState22[0],
-      setTitle = _useState22[1];
+      userId = _useState22[0],
+      setUserId = _useState22[1];
 
   var _useState23 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
       _useState24 = _slicedToArray(_useState23, 2),
-      description = _useState24[0],
-      setDescription = _useState24[1];
+      title = _useState24[0],
+      setTitle = _useState24[1];
+
+  var _useState25 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
+      _useState26 = _slicedToArray(_useState25, 2),
+      description = _useState26[0],
+      setDescription = _useState26[1];
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
-    axios__WEBPACK_IMPORTED_MODULE_6___default()('api/auth/user', {
-      method: 'get',
+    axios__WEBPACK_IMPORTED_MODULE_6___default()("api/auth/user", {
+      method: "get",
       headers: {
-        'Authorization': "Bearer ".concat(localStorage['appState'] ? JSON.parse(localStorage['appState']).access_token : '')
+        Authorization: "Bearer ".concat(localStorage["appState"] ? JSON.parse(localStorage["appState"]).access_token : "")
       }
     }).then(function (res) {
-      return setName(res.data.name.charAt(0).toUpperCase() + res.data.name.slice(1));
+      setName(res.data.name.charAt(0).toUpperCase() + res.data.name.slice(1));
+      setUserId(res.data.id);
+      return res.data.id;
+    }).then(function (res) {
+      axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes/", {
+        userId: res
+      }).then(function (res) {
+        // const tempNotes = res.data.map(note => {
+        //   note.shareTarget = false
+        //   return note
+        // })
+        // const tempDelNotes = [...res.data.map(note => {
+        //   note.shareTarget = false
+        //   return note
+        // })]
+        var arr = Object.entries(res.data).map(function (innerArray) {
+          return innerArray[1];
+        });
+        setNotes(arr); // setDeletedNotes(tempDelNotes)
+
+        setUser(res.data.username);
+        setLoading(false);
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     });
-  }, []); //   useEffect(() => {
-  //     axios.get('api/profile')
-  //       .then(res => {
-  //         const tempNotes = [...res.data.notes.notes.map(note => {
-  //           note.shareTarget = false
-  //           return note
-  //         })]
-  //         const tempDelNotes = [...res.data.deleted.notes.map(note => {
-  //           note.shareTarget = false
-  //           return note
-  //         })]
-  //         setNotes(tempNotes)
-  //         setDeletedNotes(tempDelNotes)
-  //         setUser(res.data.username)
-  //         setLoading(false)
-  //       })
-  //       .catch(err => console.log(err))
-  //   }, [])
+  }, []); // useEffect(() => {
+  //   axios.post(`api/notes/`, {
+  //     userId
+  //   })
+  //     .then(res => {
+  //       // const tempNotes = res.data.map(note => {
+  //       //   note.shareTarget = false
+  //       //   return note
+  //       // })
+  //       // const tempDelNotes = [...res.data.map(note => {
+  //       //   note.shareTarget = false
+  //       //   return note
+  //       // })]
+  //       setNotes(res.data)
+  //       // setDeletedNotes(tempDelNotes)
+  //       setUser(res.data.username)
+  //       setLoading(false)
+  //     })
+  //     .catch(err => console.log(err))
+  // }, [])
   //   useEffect(() => {
   //     let scopedUser = user
   //     axios.get('api/showallusers')
@@ -102659,11 +102690,15 @@ var Notes = function Notes() {
 
   var handleSubmit = function handleSubmit(e) {
     e.preventDefault();
-    axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/newnote", {
+    axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes", {
       title: title,
-      description: description
+      description: description,
+      userId: userId
     }).then(function (res) {
-      setNotes(_toConsumableArray(res.data.notes));
+      var arr = Object.entries(res.data).map(function (innerArray) {
+        return innerArray[1];
+      });
+      setNotes(arr);
       resetForm();
       return toggleNoteForm(!showNoteForm);
     })["catch"](function (err) {
@@ -102723,12 +102758,15 @@ var Notes = function Notes() {
       createdAt: note.createdAt
     });
   });
+  notes.map(function (note) {
+    return console.log(note);
+  });
   var notesElt = notes.map(function (note) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NoteCards_NoteCard__WEBPACK_IMPORTED_MODULE_2__["default"], {
-      updatedAt: note.updatedAt,
-      createdAt: note.createdAt,
-      key: note._id,
-      dataNoteId: note._id,
+      updatedAt: note.updated_at,
+      createdAt: note.created_at,
+      key: note.id,
+      dataNoteId: note.id,
       title: note.title,
       description: note.description,
       deleteNote: deleteNote,

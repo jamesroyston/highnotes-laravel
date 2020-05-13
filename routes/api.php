@@ -33,3 +33,6 @@ Route::group([
         Route::get('user', 'AuthController@user');
     });
 });
+
+Route::resource('notes', 'NotesController');
+Route::post('notes', 'NotesController@getAllNotes');

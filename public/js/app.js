@@ -102584,10 +102584,8 @@ var Notes = function Notes() {
       setName(res.data.name.charAt(0).toUpperCase() + res.data.name.slice(1));
       setUserId(res.data.id);
       return res.data.id;
-    }).then(function (res) {
-      axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes", {
-        userId: res
-      }).then(function (res) {
+    }).then(function (userId) {
+      axios__WEBPACK_IMPORTED_MODULE_6___default.a.get("api/notes/".concat(userId)).then(function (res) {
         // const tempNotes = res.data.map(note => {
         //   note.shareTarget = false
         //   return note
@@ -102688,7 +102686,7 @@ var Notes = function Notes() {
 
   var handleSubmit = function handleSubmit(e) {
     e.preventDefault();
-    axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes/new", {
+    axios__WEBPACK_IMPORTED_MODULE_6___default.a.post("api/notes", {
       title: title,
       description: description,
       userId: userId

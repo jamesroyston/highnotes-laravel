@@ -35,6 +35,6 @@ Route::group([
 });
 
 //Route::resource('notes', 'NotesController');
-Route::post('notes', 'NotesController@getAllNotes');
-Route::post('notes/new', 'NotesController@store');
+Route::get('notes/{userId}', 'NotesController@index');
+Route::post('notes', 'NotesController@store');
 Route::delete('notes/{userId}/{noteId}', 'NotesController@destroy');

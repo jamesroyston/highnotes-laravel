@@ -39,11 +39,9 @@ const Notes = () => {
         setUserId(res.data.id);
         return res.data.id;
       })
-      .then(res => {
+      .then(userId => {
         axios
-          .post(`api/notes`, {
-            userId: res
-          })
+          .get(`api/notes/${userId}`)
           .then(res => {
             // const tempNotes = res.data.map(note => {
             //   note.shareTarget = false
@@ -130,7 +128,7 @@ const Notes = () => {
   const handleSubmit = e => {
     e.preventDefault();
     axios
-      .post("api/notes/new", {
+      .post("api/notes", {
         title,
         description,
         userId

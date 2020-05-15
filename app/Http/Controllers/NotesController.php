@@ -8,17 +8,6 @@ use App\User;
 
 class NotesController extends Controller
 {
-
-    /**
-     * Display a listing of all Notes
-     *
-     * @return Note[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public function getAllNotes(Request $request) {
-//        return Note::all()->where('user_id', '=', $request->get('userId'));
-
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -42,7 +31,7 @@ class NotesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -55,7 +44,6 @@ class NotesController extends Controller
         ]);
         $note->save();
         return Response(User::find($id)->notes()->get(),200);
-//        return 'hey';
     }
 
     /**

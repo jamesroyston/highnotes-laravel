@@ -43,44 +43,13 @@ const Notes = () => {
         axios
           .get(`api/notes/${userId}`)
           .then(res => {
-            // const tempNotes = res.data.map(note => {
-            //   note.shareTarget = false
-            //   return note
-            // })
-            // const tempDelNotes = [...res.data.map(note => {
-            //   note.shareTarget = false
-            //   return note
-            // })]
-            // let arr = Object.entries(res.data).map(innerArray => innerArray[1]);
             setNotes(res.data);
-            // setDeletedNotes(tempDelNotes)
             setUser(res.data.username);
             setLoading(false);
           })
           .catch(err => console.log(err));
       });
   }, []);
-
-  // useEffect(() => {
-  //   axios.post(`api/notes/`, {
-  //     userId
-  //   })
-  //     .then(res => {
-  //       // const tempNotes = res.data.map(note => {
-  //       //   note.shareTarget = false
-  //       //   return note
-  //       // })
-  //       // const tempDelNotes = [...res.data.map(note => {
-  //       //   note.shareTarget = false
-  //       //   return note
-  //       // })]
-  //       setNotes(res.data)
-  //       // setDeletedNotes(tempDelNotes)
-  //       setUser(res.data.username)
-  //       setLoading(false)
-  //     })
-  //     .catch(err => console.log(err))
-  // }, [])
 
   //   useEffect(() => {
   //     let scopedUser = user
